@@ -1,7 +1,8 @@
 
-import vinplots
-import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import vinplots
 
 
 from ._SequenceGenerator import _SequenceGenerator
@@ -18,10 +19,10 @@ def _define_gene_exons(n_bases, n_boundaries, boundary_spacing):
     
     for i in range(len(exon_bounds)-1):
         if i % boundary_spacing == 0:
-            Exon['Start'].append(exon_bounds[i])
-            Exon['End'].append(exon_bounds[i + 1])
+            ExonDict['Start'].append(exon_bounds[i])
+            ExonDict['End'].append(exon_bounds[i + 1])
            
-    exon_df = pd.DataFrame.from_dict(Exon)
+    exon_df = pd.DataFrame.from_dict(ExonDict)
     
     return exon_df
 
@@ -42,13 +43,15 @@ def _plot_gene(exon_df, color="navy"):
     
     fig, ax = _construct_gene_plot()
     
-    plt.hlines(1, exon_bounds.min(), exon_bounds.max(), color=color, zorder=2)
+    gene_width = exon_df.End.max() - exon_df.Start.min()
+    
+    plt.hlines(1, exon_df.Start.min(), exon_df.End.max(), color=color, zorder=2)
     plt.ylim(.95, 1.1)
     
     for i, exon in exon_df.iterrows():
         plt.vlines(exon.Start, 0.95, 1.025, color="lightgrey", linestyle="--", lw=1)
         plt.vlines(exon.End, 0.95, 1.025, color="lightgrey", linestyle="--", lw=1)
-        plt.text(x=exon_start + 200, y=1.03, s="{}-{}".format(exon.Start, exon.End), rotation=25)
+        plt.text(x=exon.Start + gene_width/500, y=1.03, s="{}-{}".format(exon.Start, exon.End), rotation=25)
         plt.hlines(1, exon.Start, exon.End, color=color, lw=15, zorder=2)
 
 

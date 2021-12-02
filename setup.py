@@ -15,7 +15,7 @@ setup(
     long_description_content_type="text/markdown",
     description="seq-toolkit - Basic sequence manipulation tools. A vintools package.",
     packages=[
-        "seq-toolkit",
+        "seq_toolkit",
     ],
     
     install_requires=[
