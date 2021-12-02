@@ -19,7 +19,6 @@ setup(
     ],
     
     install_requires=[
-	"licorice>=0.0.2",
 	"vinplots>=0.0.1",
 	"pandas>=1.3.3",
     ],
