@@ -1,3 +1,13 @@
+
+# _construct_gene.py
+
+__module_name__ = "_construct_gene.py"
+__author__ = ", ".join(["Michael E. Vinyard"])
+__email__ = ", ".join(["vinyard@g.harvard.edu",])
+
+
+# package imports #
+# --------------- #
 import pandas as pd
 import numpy as np
 

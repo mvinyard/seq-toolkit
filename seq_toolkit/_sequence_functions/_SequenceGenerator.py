@@ -1,4 +1,13 @@
 
+# _SequenceGenerator.py
+
+__module_name__ = "_SequenceGenerator.py"
+__author__ = ", ".join(["Michael E. Vinyard"])
+__email__ = ", ".join(["vinyard@g.harvard.edu",])
+
+
+# package imports #
+# --------------- #
 import numpy as np
 
 def _set_weight_simplex(A=1, C=1, G=1, T=1):

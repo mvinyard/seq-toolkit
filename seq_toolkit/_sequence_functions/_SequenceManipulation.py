@@ -1,4 +1,11 @@
 
+# _SequenceManipulation.py
+
+__module_name__ = "_SequenceManipulation.py"
+__author__ = ", ".join(["Michael E. Vinyard"])
+__email__ = ", ".join(["vinyard@g.harvard.edu",])
+
+
 class _SequenceManipulation:
 
     """
