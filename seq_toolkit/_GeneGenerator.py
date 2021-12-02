@@ -49,18 +49,35 @@ def _define_gene_exons(n_bases, n_boundaries, boundary_spacing):
     
     return exon_df
 
-def _construct_gene_plot():
+def _construct_gene_plot(gene_width, n_ticks):
+    
+    """
+    Create the framework for the gene figure. 
+    
+    Parameters:
+    -----------
+    gene_width
+        Length of the gene being plotted. 
+    
+    n_ticks
+        Number of ticks along the x-axis. 
+        type: int
+        
+    Returns:
+    --------
+    fig, ax
+    """
 
     fig = vinplots.Plot()
     fig.construct(nplots=1, ncols=1, figsize_width=2.5)
     fig.modify_spines(ax="all", spines_to_delete=['top', 'right', 'left'])
     ax = fig.AxesDict[0][0]
-    xt = ax.set_xticks(np.linspace(0, 50000, 11))
+    xt = ax.set_xticks(np.linspace(0, gene_width, n_ticks))
     yt = ax.set_yticks([])
     
     return fig, ax
 
-def _plot_gene(exon_df, color="navy"):
+def _plot_gene(exon_df, color="navy", save=False):
     
     """
     Plot a simulated gene. 
@@ -70,20 +87,24 @@ def _plot_gene(exon_df, color="navy"):
     color
         type: str
         default: "navy"
-
+        
+    save
+        If not False, pass a string, which will trigger the object to save with figname=`save`.
+        type: bool or str
+        default: False
+        
     Returns:
     --------
-    None, prints plot.
+    None, prints (and/or saves) plot.
 
     Notes:
     ------
-    (1) `save` is not yet implemented
-    (2) requires prior running of `Gene.create()`
+    (1) requires prior running of `Gene.create()`
     """
     
-    fig, ax = _construct_gene_plot()
-    
     gene_width = exon_df.End.max() - exon_df.Start.min()
+    
+    fig, ax = _construct_gene_plot(gene_width)
     
     plt.hlines(1, exon_df.Start.min(), exon_df.End.max(), color=color, zorder=2)
     plt.ylim(.95, 1.1)
@@ -93,7 +114,9 @@ def _plot_gene(exon_df, color="navy"):
         plt.vlines(exon.End, 0.95, 1.025, color="lightgrey", linestyle="--", lw=1)
         plt.text(x=exon.Start + gene_width/500, y=1.03, s="{}-{}".format(exon.Start, exon.End), rotation=25)
         plt.hlines(1, exon.Start, exon.End, color=color, lw=15, zorder=2)
-
+    
+    if save:
+        fig.savefig(save)
 
 class _GeneGenerator:
     
@@ -131,7 +154,7 @@ class _GeneGenerator:
         if return_gene:
             return self.seq
         
-    def plot(self, color="navy"):
+    def plot(self, color="navy", save=False):
         
         """
         Plot a simulated gene. 
@@ -141,6 +164,11 @@ class _GeneGenerator:
         color
             type: str
             default: "navy"
+            
+        save
+            If not False, pass a string, which will trigger the object to save with figname=`save`.
+            type: bool or str
+            default: False
         
         Returns:
         --------
@@ -152,4 +180,4 @@ class _GeneGenerator:
         (2) requires prior running of `Gene.create()`
         """
         
-        _plot_gene(self.exon_df, color)
+        _plot_gene(self.exon_df, color, save)
