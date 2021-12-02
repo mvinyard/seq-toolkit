@@ -77,7 +77,7 @@ def _construct_gene_plot(gene_width, n_ticks):
     
     return fig, ax
 
-def _plot_gene(exon_df, color="navy", save=False):
+def _plot_gene(exon_df, color="navy", n_ticks=11, save=False):
     
     """
     Plot a simulated gene. 
@@ -87,6 +87,11 @@ def _plot_gene(exon_df, color="navy", save=False):
     color
         type: str
         default: "navy"
+        
+    n_ticks
+        Number of ticks along the gene plot's x-axis.
+        type: int
+        default: 11
         
     save
         If not False, pass a string, which will trigger the object to save with figname=`save`.
@@ -104,7 +109,7 @@ def _plot_gene(exon_df, color="navy", save=False):
     
     gene_width = exon_df.End.max() - exon_df.Start.min()
     
-    fig, ax = _construct_gene_plot(gene_width)
+    fig, ax = _construct_gene_plot(gene_width, n_ticks)
     
     plt.hlines(1, exon_df.Start.min(), exon_df.End.max(), color=color, zorder=2)
     plt.ylim(.95, 1.1)
@@ -154,7 +159,7 @@ class _GeneGenerator:
         if return_gene:
             return self.seq
         
-    def plot(self, color="navy", save=False):
+    def plot(self, color="navy", n_ticks=11, save=False):
         
         """
         Plot a simulated gene. 
@@ -165,6 +170,11 @@ class _GeneGenerator:
             type: str
             default: "navy"
             
+        n_ticks
+            Number of ticks along the gene plot's x-axis.
+            type: int
+            default: 11
+        
         save
             If not False, pass a string, which will trigger the object to save with figname=`save`.
             type: bool or str
