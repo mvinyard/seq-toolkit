@@ -21,6 +21,7 @@ setup(
     install_requires=[
         "vinplots>=0.0.1",
         "pandas>=1.3.3",
+	"licorice>=0.0.2",
     ],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
