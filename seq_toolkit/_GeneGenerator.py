@@ -9,7 +9,30 @@ from ._SequenceGenerator import _SequenceGenerator
 
 def _define_gene_exons(n_bases, n_boundaries, boundary_spacing):
     
-    """"""
+    """
+    Choose positions for gene exons. 
+    
+    Parameters:
+    -----------
+    n_bases
+        Length of matching inputs sequence
+        type: int
+        
+    n_boundaries
+        Number of samples drawn from the range of len(sequence)
+        type: int
+    
+    boundary_spacing
+        choice of every "n" boundary
+        type: int
+    
+    Returns:
+    --------
+    exon_df
+    
+    Notes:
+    ------
+    """
     
     ExonDict = {}
     ExonDict['Start'] = []
@@ -39,7 +62,24 @@ def _construct_gene_plot():
 
 def _plot_gene(exon_df, color="navy"):
     
-    """"""
+    """
+    Plot a simulated gene. 
+
+    Parameters:
+    -----------
+    color
+        type: str
+        default: "navy"
+
+    Returns:
+    --------
+    None, prints plot.
+
+    Notes:
+    ------
+    (1) `save` is not yet implemented
+    (2) requires prior running of `Gene.create()`
+    """
     
     fig, ax = _construct_gene_plot()
     
@@ -59,7 +99,23 @@ class _GeneGenerator:
     
     def __init__(self, A=1, C=1, G=1, T=1):
         
-        """"""
+        """
+        Initializes the `Gene` class.
+        
+        Parameters:
+        ----------
+        N {A, C, G, T}
+            proportions of bases to be sampled. simplex. 
+        
+        Returns:
+        -------
+        Initializes self.Gene and creates/modifies self.SeqGen
+        
+        Notes:
+        ------
+        (1) As an example, if A=2, the simplex vector would appear as: [0.4, 0.2, 0.2, 0.2]
+        
+        """
         
         self.Gene = {}
         self.SeqGen = _SequenceGenerator(A, C, G, T)
