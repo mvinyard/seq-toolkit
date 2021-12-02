@@ -77,4 +77,23 @@ class _GeneGenerator:
         
     def plot(self, color="navy"):
         
+        """
+        Plot a simulated gene. 
+        
+        Parameters:
+        -----------
+        color
+            type: str
+            default: "navy"
+        
+        Returns:
+        --------
+        None, prints plot.
+        
+        Notes:
+        ------
+        (1) `save` is not yet implemented
+        (2) requires prior running of `Gene.create()`
+        """
+        
         _plot_gene(self.exon_df, color)
