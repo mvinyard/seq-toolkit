@@ -169,16 +169,18 @@ class _GeneGenerator:
         
         self.Gene = {}
         self.SeqGen = _SequenceGenerator(A, C, G, T)
-        
-        
+
     def create(self, 
                gene_length=50000,
                n_exons=15, 
                min_exon_length=50, 
                max_exon_length=2500, 
-               return_gene=True, 
-               zero_start=False,
-               verbose=False,):
+               start_key="gene_feature.start",
+               end_key="gene_feature.end",
+               feature_key="gene_feature",
+               zero_start=False, 
+               verbose=False,
+               return_gene=False):
         
         """
         Executes creation of the gene within the set parameters.
@@ -233,10 +235,14 @@ class _GeneGenerator:
         
         self.gene_length = gene_length
         self.Gene["seq"] = self.seq = self.SeqGen.simulate(gene_length, return_seq=True)
-        self.gene_df = _construct_gene(gene_length, 
+        
+        self.exon_df, self.intron_df, self.gene_df= _construct_gene(gene_length, 
                                           n_exons, 
                                           min_exon_length, 
-                                          max_exon_length, 
+                                          max_exon_length,
+                                          start_key,
+                                          end_key,
+                                          feature_key,
                                           zero_start, 
                                           verbose)
         

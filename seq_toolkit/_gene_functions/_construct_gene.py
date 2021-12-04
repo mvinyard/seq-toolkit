@@ -11,8 +11,13 @@ __email__ = ", ".join(["vinyard@g.harvard.edu",])
 import pandas as pd
 import numpy as np
 
-
-def _construct_repetitive_feature(feature_space_sum, n_features, feature, zero_start=False):
+def _construct_repetitive_feature(feature_space_sum, 
+                                  n_features, 
+                                  feature, 
+                                  start_key, 
+                                  end_key,
+                                  feature_key,
+                                  zero_start=False,):
     
     """
     Given a length of space to occupy, a set number of features is generated. 
@@ -53,20 +58,20 @@ def _construct_repetitive_feature(feature_space_sum, n_features, feature, zero_s
     """
     
     FeatureDict = {}
-    FeatureDict['Start'] = []
-    FeatureDict['End'] = []
-    FeatureDict['Feature'] = feature    
+    FeatureDict[start_key] = []
+    FeatureDict[end_key]   = []
+    FeatureDict[feature_key] = feature    
     feature_dividers = np.sort(np.random.randint(0, feature_space_sum, n_features))
     
     if zero_start:
         feature_dividers[0] = 0
 
     for i in range(len(feature_dividers)):
-        FeatureDict['Start'].append(feature_dividers[i])
+        FeatureDict[start_key].append(feature_dividers[i])
         if i == len(feature_dividers)-1:
-            FeatureDict['End'].append(feature_space_sum)
+            FeatureDict[end_key].append(feature_space_sum)
         else:
-            FeatureDict['End'].append(feature_dividers[i+1])
+            FeatureDict[end_key].append(feature_dividers[i+1])
     
     feature_df = pd.DataFrame(data=FeatureDict)
     
@@ -87,21 +92,31 @@ def _preassemble_genebody_df(intron_df, exon_df):
     
     return pregene_df
 
-def _subtract_initial_UTR_space(gene_df):
+def _subtract_initial_UTR_space(gene_df, start_key, end_key):
     
     """"""
     
-    inital_space = gene_df.iloc[0].Start
+    inital_space = gene_df.iloc[0][start_key]
     
-    gene_df.Start = gene_df.Start - inital_space
-    gene_df.End = gene_df.End - inital_space
+    gene_df[start_key] = gene_df[start_key] - inital_space
+    gene_df[end_key] = gene_df[end_key] - inital_space
     
     return gene_df, inital_space
 
-def _annotate_UTRs(gene_df, gene_length):
+def _annotate_UTRs(gene_df, gene_length, feature_key, start_key, end_key):
     
-    if gene_df.iloc[0].Start != 0:
-        gene_df, total_UTR_space = _subtract_initial_UTR_space(gene_df)
+    """
+    
+    Parameters:
+    -----------
+    
+    Returns:
+    --------
+    
+    """
+    
+    if gene_df.iloc[0][start_key] != 0:
+        gene_df, total_UTR_space = _subtract_initial_UTR_space(gene_df, start_key, end_key)
         
         UTR = {}
         UTR["5prime"] = {}
@@ -111,48 +126,57 @@ def _annotate_UTRs(gene_df, gene_length):
         UTR_3p_len = total_UTR_space - UTR_5p_len
         
         # now add back the adjusted 5' UTR 
-        gene_df.Start = gene_df.Start + UTR_5p_len
-        gene_df.End = gene_df.End + UTR_5p_len
+        gene_df[start_key] = gene_df[start_key] + UTR_5p_len
+        gene_df[end_key] = gene_df[end_key] + UTR_5p_len
         
-        UTR["5prime"]['Start'] = 0
-        UTR["5prime"]['End'] = UTR_5p_len
-        UTR["3prime"]['Start'] = gene_df.iloc[-1].End
-        UTR["3prime"]['End'] = gene_length
+        UTR["5prime"][start_key] = 0
+        UTR["5prime"][end_key] = UTR_5p_len
+        UTR["3prime"][start_key] = gene_df.iloc[-1][end_key]
+        UTR["3prime"][end_key] = gene_length
         
         UTR_df = pd.DataFrame(UTR).T
-        UTR_df['Feature'] = "UTR"
-
-        gene_df = pd.concat([gene_df, UTR_df]).sort_values('Start').reset_index(drop=True)
+        UTR_df[feature_key] = "UTR"
+        
+        gene_df = pd.concat([gene_df, UTR_df]).sort_values([start_key]).reset_index(drop=True)
         return gene_df
         
     else:
         return gene_df
        
 
-def _assemble_gene_df(intron_df, exon_df):
+def _assemble_gene_df(intron_df, exon_df, start_key, end_key, feature_key):
     
     """"""
     
     pregene_df = _preassemble_genebody_df(intron_df, exon_df)
     
     contextualized_features = {}
-    contextualized_features['Start'] = []
-    contextualized_features['End']= []
-    contextualized_features['Feature']= pregene_df.Feature
+    contextualized_features[start_key] = []
+    contextualized_features[end_key]= []
+    contextualized_features[feature_key] = []
     for i in range(len(pregene_df)):
         if i != 0:
-            contextualized_features['Start'].append(pregene_df.iloc[i].Start + pregene_df.iloc[i-1].End,)
-            contextualized_features['End'].append(pregene_df.iloc[i].End + pregene_df.iloc[i-1].End)
+            contextualized_features[start_key].append(pregene_df.iloc[i][start_key] + pregene_df.iloc[i-1][end_key],)
+            contextualized_features[end_key].append(pregene_df.iloc[i][end_key] + pregene_df.iloc[i-1][end_key])
+            contextualized_features[feature_key].append(pregene_df.iloc[i][feature_key])
         else:
-            contextualized_features['Start'].append(pregene_df.iloc[i].Start)
-            contextualized_features['End'].append(pregene_df.iloc[i].End)
-            
+            contextualized_features[start_key].append(pregene_df.iloc[i][start_key])
+            contextualized_features[end_key].append(pregene_df.iloc[i][end_key])
+            contextualized_features[feature_key].append(pregene_df.iloc[i][feature_key])
     
     gene_df = pd.DataFrame(contextualized_features).reset_index(drop=True)
     
     return gene_df
 
-def _construct_gene(gene_length=50000, n_exons=15, min_exon_length=50, max_exon_length=2500, zero_start=False, verbose=False):
+def _construct_gene(gene_length=50000, 
+                    n_exons=15, 
+                    min_exon_length=50, 
+                    max_exon_length=2500, 
+                    start_key="gene_feature.start",
+                    end_key="gene_feature.end",
+                    feature_key="gene_feature",
+                    zero_start=False, 
+                    verbose=False):
     
     """
     Choose positions for gene exons. 
@@ -194,10 +218,24 @@ def _construct_gene(gene_length=50000, n_exons=15, min_exon_length=50, max_exon_
     if verbose:
         print("Total exon length:\t{}\nTotal intron length:\t{}".format(exon_sum, intron_sum))
     
-    exon_df = _construct_repetitive_feature(exon_sum, n_exons, "exon", zero_start)
-    intron_df =_construct_repetitive_feature(intron_sum, n_introns, "intron", zero_start)
-    gene_df = _assemble_gene_df(intron_df, exon_df)
-    gene_df = _annotate_UTRs(gene_df, gene_length)
-    gene_df['length'] = gene_df['End'] - gene_df['Start']
+    exon_df = _construct_repetitive_feature(exon_sum, 
+                                            n_exons, 
+                                            "exon", 
+                                            start_key, 
+                                            end_key,
+                                            feature_key,
+                                            zero_start)
+    
+    intron_df =_construct_repetitive_feature(intron_sum, 
+                                             n_introns, 
+                                             "intron", 
+                                             start_key, 
+                                             end_key,
+                                             feature_key,
+                                             zero_start,)
 
-    return gene_df
+    gene_df = _assemble_gene_df(intron_df, exon_df, start_key, end_key, feature_key)
+    gene_df = _annotate_UTRs(gene_df, gene_length, feature_key, start_key, end_key)
+    gene_df['length'] = gene_df[end_key] - gene_df[start_key]
+
+    return exon_df, intron_df, gene_df
