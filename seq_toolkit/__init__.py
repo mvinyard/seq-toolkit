@@ -14,3 +14,4 @@ from ._sequence_functions._SequenceManipulation import _SequenceManipulation as 
 from ._sequence_functions._SequenceGenerator import _SequenceGenerator as Seq
 
 from ._genome_functions._fetch_chromosome import _fetch_chromosome_sequence as fetch_chromosome
+from ._genome_functions._GenomicFeatures import _GenomicFeatures as GenomicFeatures
