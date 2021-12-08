@@ -1,6 +1,6 @@
-# _get_chromosome_sequence.py
+# _fetch_chromosome_sequence.py
 
-def _get_chromosome_sequence(ref_seq_path, query_chromosome, return_length=False):
+def _fetch_chromosome_sequence(ref_seq_path, query_chromosome, return_length=False):
 
     """
     Get a specific chromosome sequence from a reference genome. Also report the length of that sequence.
