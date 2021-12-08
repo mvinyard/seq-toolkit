@@ -1,5 +1,9 @@
 # _fetch_chromosome_sequence.py
 
+# import packages #
+# --------------- #
+from Bio import SeqIO
+
 def _fetch_chromosome_sequence(ref_seq_path, query_chromosome, return_length=False):
 
     """
