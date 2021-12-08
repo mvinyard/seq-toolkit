@@ -12,3 +12,5 @@ from ._motif_functions._isolate_constraining_sequence_motif import _isolate_cons
 
 from ._sequence_functions._SequenceManipulation import _SequenceManipulation as SequenceManipulator
 from ._sequence_functions._SequenceGenerator import _SequenceGenerator as Seq
+
+from ._get_chromosome_sequence import _get_chromosome_sequence as get_chromosome_sequence
