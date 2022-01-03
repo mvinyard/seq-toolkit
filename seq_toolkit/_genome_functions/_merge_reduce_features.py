@@ -13,8 +13,14 @@ __email__ = ", ".join(
 # --------------- #
 import numpy as np
 import pandas as pd
-import pyranges
+import os
 
+try:
+    import pyranges
+except:
+    os.system("sudo apt-get install gcc")
+    os.system("pip install pyranges")
+    import pyranges
 
 def _cluster_df_features(df):
 
