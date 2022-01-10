@@ -1,0 +1,20 @@
+def _fetch_sequence_from_coordinates(df, chromosome_seq):
+
+    """
+    Annotate df with information about guide protospacer loci and sequence.
+    Splits df into forward and reverse strand, adds loci of protospacer then recombines as before.
+    """
+    forw_df = df.loc[df.strand == "+"]
+    revr_df = df.loc[df.strand == "-"]
+
+    forw_df["guide_begin"] = (forw_df.PAM_loci - 20).astype(int)
+    forw_df["guide_end"] = (forw_df.PAM_loci).astype(int)
+    forw_df = add_protospacer_sequence(forw_df, chromosome_seq, strand="+")
+
+    revr_df["guide_begin"] = (revr_df.PAM_loci + 20).astype(int)
+    revr_df["guide_end"] = (revr_df.PAM_loci).astype(int)
+    revr_df = add_protospacer_sequence(revr_df, chromosome_seq, strand="-")
+
+    df = pd.concat([forw_df, revr_df]).sort_values("PAM_loci").reset_index(drop=True)
+
+    return df

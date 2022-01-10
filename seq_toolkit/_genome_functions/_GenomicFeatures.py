@@ -1,6 +1,5 @@
-# _merge_reduce_features.py
 
-__module_name__ = "_merge_reduce_features.py"
+__module_name__ = "_GenomicFeatures.py"
 __author__ = ", ".join(["Michael E. Vinyard"])
 __email__ = ", ".join(
     [
@@ -21,6 +20,7 @@ except:
     os.system("sudo apt-get install gcc")
     os.system("pip install pyranges")
     import pyranges
+
 
 def _cluster_df_features(df):
 
@@ -58,26 +58,22 @@ class _GenomicFeatures:
 
         self.df = df
         self._clustered_df, self._grouped_df = _cluster_overlapping_features(df)
-    
-    # .merge(self._clustered_df, on=["Cluster", "Start", "End"])
-    
+
     def merge(self):
 
-        chrom_vals = self._grouped_df["Chromosome"]
-        start_vals = self._grouped_df["Start"].aggregate(np.min)
-        end_vals = self._grouped_df["End"].aggregate(np.max)
+        self._chrom_vals = self._grouped_df["Chromosome"].aggregate(np.unique).values
+        self._start_vals = self._grouped_df["Start"].min()
+        self._end_vals = self._grouped_df["End"].max()
 
-        self.merged_df = (
-            pd.DataFrame([start_vals, end_vals])
-            .T.reset_index()
-        ).drop("Cluster", axis=1)[["Chromosome", "Start", "End"]]
+        self.merged_df = pd.DataFrame(
+            [self._chrom_vals, self._start_vals, self._end_vals],
+            index=["Chromosome", "Start", "End"],
+        ).T
 
     def write_bed(self, out_path="merged_features.bed"):
 
         """
-
         Can be downloaded and visualized directly in IGV.
-
         """
 
         self.merged_df.to_csv(out_path, sep="\t", header=False, index=False)
